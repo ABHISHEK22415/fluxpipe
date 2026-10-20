@@ -132,6 +132,11 @@ public:
                 next[(y-1)*W_ + x] = (heat_[y*W_+xm] + heat_[y*W_+x] + heat_[y*W_+xp] + heat_[(y-1)*W_+x]) * 0.245f;
             }
         }
+        // The loop above only fills rows [0, H_-2]; the fuel row (H_-1) is the
+        // source, not a diffusion target, so carry it forward unchanged instead
+        // of letting it be discarded (defaulting to 0.0f / black) by the move.
+        for (uint32_t x = 0; x < W_; ++x)
+            next[(H_-1)*W_ + x] = heat_[(H_-1)*W_ + x];
         heat_ = std::move(next);
 
         Frame f(W_, H_);
